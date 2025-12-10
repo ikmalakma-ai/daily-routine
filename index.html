@@ -4,744 +4,486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Awesome Year</title>
-    <!-- Confetti Library -->
+    <title>Family Routine Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Google Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Comic+Neue:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
         :root {
-            /* Color Palette - Vibrant & Playful but Modern */
-            --primary: #6c5ce7;
-            --primary-light: #a29bfe;
-            --secondary: #00cec9;
-            --accent: #fdcb6e;
-            --danger: #ff7675;
-            --dark: #2d3436;
-            --light: #dfe6e9;
-            --white: #ffffff;
-
-            --bg-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-
-            --font-heading: 'Outfit', sans-serif;
-            --font-body: 'Comic Neue', cursive;
+            --bg: #f4f7f6;
+            --card: #ffffff;
+            --primary: #4a90e2;
+            --font: 'Comic Sans MS', 'Baloo 2', sans-serif;
         }
 
         body {
+            font-family: var(--font);
+            background: var(--bg);
             margin: 0;
+            display: flex;
+            justify-content: center;
             min-height: 100vh;
-            font-family: var(--font-body);
-            background-image: var(--bg-gradient);
-            color: var(--dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden;
+            color: #333;
         }
 
-        .app-container {
+        .app {
             width: 100%;
-            max-width: 900px;
-            padding: 20px;
-        }
-
-        /* --- Calendar View --- */
-        #calendarView {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 24px;
-            border: var(--glass-border);
-            box-shadow: var(--shadow);
-            padding: 30px;
-            transition: transform 0.3s ease;
-        }
-
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            font-family: var(--font-heading);
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .month-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .month-controls h2 {
-            font-family: var(--font-heading);
-            margin: 0;
-            font-size: 1.5rem;
-            color: var(--dark);
-            min-width: 200px;
-            text-align: center;
-        }
-
-        .nav-btn {
-            background: var(--white);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: var(--primary);
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease;
-        }
-
-        .nav-btn:hover {
-            transform: scale(1.1);
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        /* Grid */
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 15px;
-        }
-
-        .weekday {
-            text-align: center;
-            font-family: var(--font-heading);
-            font-weight: 600;
-            color: var(--primary-light);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
-
-        .day-cell {
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 16px;
-            aspect-ratio: 1;
-            /* Square cells */
+            max-width: 600px;
+            background: var(--card);
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
-            padding: 10px;
+        }
+
+        /* SCREENS */
+        .screen {
+            display: none;
+            padding: 20px;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* HOME SCREEN */
+        .mode-btn {
+            background: white;
+            border: 2px solid #eee;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 10px 0;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            position: relative;
+            transition: 0.2s;
+            font-size: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mode-btn:hover {
+            background: #f9f9f9;
+            transform: scale(1.02);
+        }
+
+        .mode-btn.parent {
+            border-color: #4a90e2;
+            color: #4a90e2;
+        }
+
+        .mode-btn.kid {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        /* ADMIN DASHBOARD */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .progress-track {
+            background: #eee;
+            height: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
             overflow: hidden;
         }
 
-        .day-cell:hover {
-            transform: translateY(-5px);
-            background: var(--white);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .day-cell.today {
-            border-color: var(--primary);
-            background: rgba(108, 92, 231, 0.1);
-        }
-
-        .day-cell.other-month {
-            opacity: 0.4;
-            pointer-events: none;
-        }
-
-        .day-number {
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        /* Indicators for tasks */
-        .day-indicators {
-            margin-top: auto;
-            width: 100%;
-            display: flex;
-            gap: 4px;
-            justify-content: center;
-        }
-
-        .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: var(--secondary);
-        }
-
-        .dot.done {
-            background-color: var(--primary);
-        }
-
-        /* --- Modal (Day View) --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+        .progress-fill {
             height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 100;
+            transition: width 0.5s ease;
+        }
+
+        /* FORMS */
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .emoji-grid {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 1;
-            transition: opacity 0.3s ease;
+            gap: 10px;
+            margin: 10px 0;
+            overflow-x: auto;
         }
 
-        .modal-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .modal-content {
-            background: var(--white);
-            width: 90%;
-            max-width: 550px;
-            border-radius: 30px;
-            padding: 30px;
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            transform: scale(1);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .modal-overlay.hidden .modal-content {
-            transform: scale(0.8);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
+        .emoji-opt {
             font-size: 2rem;
+            padding: 5px;
             cursor: pointer;
-            color: var(--danger);
-            line-height: 1;
+            border: 2px solid transparent;
+            border-radius: 10px;
         }
 
-        .day-header {
-            text-align: center;
-            margin-bottom: 25px;
+        .emoji-opt.selected {
+            background: #eee;
+            border-color: #333;
         }
 
-        .day-header h2 {
-            font-family: var(--font-heading);
-            margin: 0 0 15px 0;
-            color: var(--dark);
-            font-size: 1.8rem;
+        .btn-main {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+            font-size: 1.1rem;
+            cursor: pointer;
         }
 
-        .progress-wrapper {
-            display: flex;
-            align-items: center;
+        /* KID UI */
+        .kid-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
 
-        .progress-bar-bg {
-            flex-grow: 1;
-            height: 15px;
-            background: var(--light);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            width: 0%;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #progressText {
-            font-weight: bold;
-            color: var(--primary);
-            font-family: var(--font-heading);
-        }
-
-        /* Routine Section */
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        #taskInput {
-            flex-grow: 1;
-            padding: 15px;
-            border: 2px solid var(--light);
-            border-radius: 15px;
-            font-family: var(--font-heading);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        #taskInput:focus {
-            border-color: var(--secondary);
-        }
-
-        #addTaskBtn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            width: 50px;
-            font-size: 1.5rem;
+        .kid-btn {
+            background: white;
+            border: 2px solid;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
             cursor: pointer;
-            transition: transform 0.1s;
         }
 
-        #addTaskBtn:click {
-            transform: scale(0.95);
-        }
-
-        .task-list {
-            list-style: none;
-            padding: 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .task-item {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 12px 15px;
-            margin-bottom: 10px;
+        .task-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-
-        .task-item:hover {
+            padding: 15px;
             background: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            transform: translateX(5px);
-        }
-
-        .task-item.completed {
-            background: #e6fffa;
-            border-color: var(--secondary);
-            color: #b2bec3;
-            text-decoration: line-through;
-        }
-
-        .task-item.completed span::before {
-            content: "✅ ";
-            margin-right: 5px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .delete-task-btn {
-            background: #ffeaa7;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            color: #d63031;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            margin-bottom: 10px;
             cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .task-row.done {
+            background: #e8f5e9;
+            border-color: #66bb6a;
+            opacity: 0.8;
+        }
+
+        .task-row.done span {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .checkbox {
+            width: 25px;
+            height: 25px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            margin-left: auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-weight: bold;
         }
 
-        .task-item:hover .delete-task-btn {
-            opacity: 1;
+        .task-row.done .checkbox {
+            background: #66bb6a;
+            border-color: #66bb6a;
+            color: white;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .calendar-grid {
-                gap: 8px;
-            }
-
-            .weekday {
-                font-size: 0.7rem;
-            }
-
-            .day-number {
-                font-size: 1rem;
-            }
-
-            .app-container {
-                padding: 10px;
-            }
+        .back-link {
+            cursor: pointer;
+            color: #888;
+            margin-bottom: 10px;
+            display: inline-block;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="app-container">
-        <!-- Calendar View -->
-        <div id="calendarView" class="view active">
-            <header class="main-header">
-                <div class="logo">📅 My Year</div>
-                <div class="month-controls">
-                    <button id="prevMonth" class="nav-btn">&lt;</button>
-                    <h2 id="currentMonthYear">September 2023</h2>
-                    <button id="nextMonth" class="nav-btn">&gt;</button>
-                </div>
-            </header>
+    <div class="app">
 
-            <div class="calendar-grid">
-                <div class="weekday">Sun</div>
-                <div class="weekday">Mon</div>
-                <div class="weekday">Tue</div>
-                <div class="weekday">Wed</div>
-                <div class="weekday">Thu</div>
-                <div class="weekday">Fri</div>
-                <div class="weekday">Sat</div>
-                <!-- Days will be injected here by JS -->
+        <div id="home" class="screen active">
+            <h1 style="text-align:center;">Family Daily Routine</h1>
+
+            <div class="mode-btn kid" onclick="openKidMode()">
+                <i class="fas fa-child"></i>
+                <div>I am a Kid</div>
+            </div>
+
+            <div class="mode-btn parent" onclick="openAdminMode()">
+                <i class="fas fa-user-shield"></i>
+                <div>I am a Parent (Admin)</div>
             </div>
         </div>
 
-        <!-- Day/Routine View (Modal Overlay) -->
-        <div id="dayView" class="modal-overlay hidden">
-            <div class="modal-content">
-                <button class="close-btn" id="closeDayBtn">&times;</button>
-
-                <header class="day-header">
-                    <h2 id="selectedDateDisplay">Monday, 12th</h2>
-                    <div class="progress-wrapper">
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill" id="progressBar"></div>
-                        </div>
-                        <span id="progressText">0%</span>
-                    </div>
-                </header>
-
-                <div class="routine-section">
-                    <div class="input-group">
-                        <input type="text" id="taskInput" placeholder="Add a new mission...">
-                        <button id="addTaskBtn">+</button>
-                    </div>
-
-                    <ul id="taskList" class="task-list">
-                        <!-- Tasks go here -->
-                    </ul>
-                </div>
+        <div id="admin" class="screen">
+            <div class="admin-header">
+                <span class="back-link" onclick="goHome()">Back</span>
+                <h2>Admin Dashboard</h2>
+                <button onclick="resetAllKids()"
+                    style="background:#ff7675; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Reset
+                    New Day</button>
             </div>
+
+            <div id="admin-list">
+                <p>Loading kids...</p>
+            </div>
+
+            <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
+
+            <h3>Add New Kid</h3>
+            <input type="text" id="newName" placeholder="Name (e.g. Leo)">
+            <p style="margin:5px 0; font-weight:bold;">Pick an Avatar:</p>
+            <div class="emoji-grid" id="emojiPicker">
+                <div class="emoji-opt selected">🦁</div>
+                <div class="emoji-opt">🦄</div>
+                <div class="emoji-opt">🦖</div>
+                <div class="emoji-opt">🚀</div>
+                <div class="emoji-opt">🐱</div>
+                <div class="emoji-opt">👸</div>
+                <div class="emoji-opt">🕷️</div>
+            </div>
+            <button class="btn-main" onclick="addKid()">Add Kid</button>
         </div>
+
+        <div id="kid-select" class="screen">
+            <span class="back-link" onclick="goHome()">Back</span>
+            <h1 style="text-align:center">Who are you?</h1>
+            <div id="kid-buttons" class="kid-grid"></div>
+        </div>
+
+        <div id="checklist" class="screen">
+            <div class="admin-header" style="border-color: transparent;">
+                <button class="back-link" style="background:none; border:none; font-size:1.2rem"
+                    onclick="openKidMode()">Start Over</button>
+                <div style="text-align:right">
+                    <h2 id="kidTitle" style="margin:0">Name</h2>
+                    <small>Today's Tasks</small>
+                </div>
+                <div id="kidAvatarDisplay" style="font-size: 2.5rem;">🦁</div>
+            </div>
+
+            <div id="task-container"></div>
+        </div>
+
     </div>
 
-    <script>
-        // Calendar & Routine App Logic
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // DOM Elements
-        const calendarGrid = document.querySelector('.calendar-grid');
-        const currentMonthYear = document.getElementById('currentMonthYear');
-        const prevMonthBtn = document.getElementById('prevMonth');
-        const nextMonthBtn = document.getElementById('nextMonth');
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzmYoVIcbv08KvCPUHzV1Io9doLS8mmiI",
+            authDomain: "triple-zara-s-routine.firebaseapp.com",
+            projectId: "triple-zara-s-routine",
+            storageBucket: "triple-zara-s-routine.firebasestorage.app",
+            messagingSenderId: "109338731278",
+            appId: "1:109338731278:web:451a2446d7270cbca2ad5f",
+            measurementId: "G-RQ3KH1103R"
+        };
 
-        const modal = document.getElementById('dayView');
-        const closeDayBtn = document.getElementById('closeDayBtn');
-        const selectedDateDisplay = document.getElementById('selectedDateDisplay');
-        const taskInput = document.getElementById('taskInput');
-        const addTaskBtn = document.getElementById('addTaskBtn');
-        const taskList = document.getElementById('taskList');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        // State
-        let currentDate = new Date();
-        let selectedDateKey = null; // Format: YYYY-MM-DD
+        // --- DATA ---
+        const TASKS = [
+            { id: 't1', txt: 'Wake Up ☀️' },
+            { id: 't2', txt: 'Brush Teeth 🦷' },
+            { id: 't3', txt: 'Make Bed 🛏️' },
+            { id: 't4', txt: 'Breakfast 🍳' },
+            { id: 't5', txt: 'School Work 📚' },
+            { id: 't6', txt: 'Play Time 🧩' },
+            { id: 't7', txt: 'Sleep 🌙' }
+        ];
 
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCalendar();
+        let currentKidId = null;
+        let selectedEmoji = '🦁';
 
-            // Event Listeners
-            prevMonthBtn.addEventListener('click', () => changeMonth(-1));
-            nextMonthBtn.addEventListener('click', () => changeMonth(1));
+        // --- NAVIGATION ---
+        window.goHome = () => show('home');
+        window.openAdminMode = () => show('admin');
+        window.openKidMode = () => show('kid-select');
 
-            closeDayBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
+        function show(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // --- REALTIME LISTENER (The Core Engine) ---
+        // This runs automatically whenever data changes in the database
+        onSnapshot(collection(db, "kids"), (snapshot) => {
+            const kids = [];
+            snapshot.forEach(doc => kids.push({ ...doc.data(), id: doc.id }));
+
+            renderAdminList(kids);
+            renderKidButtons(kids);
+
+            // If we are currently inside a kid's checklist, update it live
+            if (currentKidId) {
+                const kidData = kids.find(k => k.id === currentKidId);
+                if (kidData) renderChecklist(kidData);
+            }
+        });
+
+        // --- ADMIN LOGIC ---
+        function renderAdminList(kids) {
+            const container = document.getElementById('admin-list');
+            container.innerHTML = '';
+
+            if (kids.length === 0) container.innerHTML = '<p>No kids yet. Add one below!</p>';
+
+            kids.forEach(kid => {
+                const completed = kid.completedTasks ? kid.completedTasks.length : 0;
+                const percent = Math.round((completed / TASKS.length) * 100);
+
+                const div = document.createElement('div');
+                div.className = 'stat-card';
+                div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                    <span>${kid.avatar} ${kid.name}</span>
+                    <span>${percent}%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width:${percent}%; background: ${kid.color || '#4a90e2'}"></div>
+                </div>
+                <small style="color:#888;">${completed} of ${TASKS.length} tasks done</small>
+            `;
+                container.appendChild(div);
             });
+        }
 
-            addTaskBtn.addEventListener('click', addTask);
-            taskInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') addTask();
+        // Emoji Selection Logic
+        document.querySelectorAll('.emoji-opt').forEach(e => {
+            e.addEventListener('click', () => {
+                document.querySelectorAll('.emoji-opt').forEach(x => x.classList.remove('selected'));
+                e.classList.add('selected');
+                selectedEmoji = e.innerText;
             });
         });
 
-        // --- Calendar Logic ---
+        window.addKid = async () => {
+            const name = document.getElementById('newName').value;
+            if (!name) return alert("Name needed!");
 
-        function renderCalendar() {
-            // Clear existing days (keep headers)
-            const existingDays = document.querySelectorAll('.day-cell');
-            existingDays.forEach(day => day.remove());
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A29BFE', '#FF9FF3'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-
-            // Update Header
-            const monthNames = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-            ];
-            currentMonthYear.innerText = `${monthNames[month]} ${year}`;
-
-            // Calculate days
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-            // Render Previous Month Padding
-            for (let i = 0; i < firstDay; i++) {
-                const dayNum = daysInPrevMonth - firstDay + 1 + i;
-                const div = createDayElement(dayNum, true);
-                calendarGrid.appendChild(div);
-            }
-
-            // Render Current Month Days
-            const today = new Date();
-            for (let i = 1; i <= daysInMonth; i++) {
-                const div = createDayElement(i, false);
-
-                // Check if Today
-                if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                    div.classList.add('today');
-                }
-
-                // Add Click Event
-                div.addEventListener('click', () => openDay(i));
-
-                // Add Indicators
-                const dateKey = formatDateKey(year, month, i);
-                const tasks = getTasks(dateKey);
-                if (tasks.length > 0) {
-                    const indicators = document.createElement('div');
-                    indicators.classList.add('day-indicators');
-                    // Show up to 3 dots
-                    tasks.slice(0, 3).forEach(task => {
-                        const dot = document.createElement('div');
-                        dot.classList.add('dot');
-                        if (task.completed) dot.classList.add('done');
-                        indicators.appendChild(dot);
-                    });
-                    div.appendChild(indicators);
-                }
-
-                calendarGrid.appendChild(div);
-            }
-
-            // Render Next Month Padding (to fill 6 rows grid if needed, mostly just to fill current row)
-            const totalCells = firstDay + daysInMonth;
-            const remainingCells = (7 - (totalCells % 7)) % 7;
-            for (let i = 1; i <= remainingCells; i++) {
-                const div = createDayElement(i, true);
-                calendarGrid.appendChild(div);
-            }
-        }
-
-        function createDayElement(dayNum, isOtherMonth) {
-            const div = document.createElement('div');
-            div.classList.add('day-cell');
-            if (isOtherMonth) div.classList.add('other-month');
-
-            const span = document.createElement('span');
-            span.classList.add('day-number');
-            span.innerText = dayNum;
-
-            div.appendChild(span);
-            return div;
-        }
-
-        function changeMonth(delta) {
-            currentDate.setMonth(currentDate.getMonth() + delta);
-            renderCalendar();
-        }
-
-        // --- Day View (Modal) Logic ---
-
-        function formatDateKey(year, month, day) {
-            // Zero-pad month and day
-            const m = (month + 1).toString().padStart(2, '0');
-            const d = day.toString().padStart(2, '0');
-            return `${year}-${m}-${d}`;
-        }
-
-        function openDay(day) {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-
-            selectedDateKey = formatDateKey(year, month, day);
-
-            // Set Header Date
-            const dateObj = new Date(year, month, day);
-            const options = { weekday: 'long', day: 'numeric', month: 'long' };
-            selectedDateDisplay.innerText = dateObj.toLocaleDateString('en-US', options);
-
-            // Load Tasks
-            loadTasksUI();
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeModal() {
-            modal.classList.add('hidden');
-            // Refresh calendar to update indicators
-            renderCalendar();
-        }
-
-        // --- Task Management ---
-
-        function getTasks(dateKey) {
-            return JSON.parse(localStorage.getItem(`routine_${dateKey}`)) || [];
-        }
-
-        function saveTasksStore(dateKey, tasks) {
-            localStorage.setItem(`routine_${dateKey}`, JSON.stringify(tasks));
-        }
-
-        function loadTasksUI() {
-            taskList.innerHTML = '';
-            const tasks = getTasks(selectedDateKey);
-
-            // If empty, maybe copy from previous day? Or just default items?
-            // Let's stick to empty or default suggested items if it's the very first time ever?
-            // For now, clean slate is fine, OR we can pull "Daily Routine" defaults if empty.
-
-            if (tasks.length === 0) {
-                // Optional: Pre-fill?
-            }
-
-            tasks.forEach(task => {
-                renderTaskElement(task);
+            await addDoc(collection(db, "kids"), {
+                name: name,
+                avatar: selectedEmoji,
+                color: randomColor,
+                completedTasks: []
             });
+            document.getElementById('newName').value = '';
+        };
 
-            updateProgress();
-        }
+        window.resetAllKids = async () => {
+            if (!confirm("Reset checklist for ALL kids? (New Day)")) return;
 
-        function addTask() {
-            const text = taskInput.value.trim();
-            if (!text) return;
+            // Batch update to be efficient
+            const batch = writeBatch(db);
+            const snapshot = await getDocs(collection(db, "kids")); // Need to import getDocs if used here, 
+            // simpler way for this single file without extra imports:
 
-            const task = {
-                id: Date.now(),
-                text: text,
-                completed: false
-            };
+            // Loop through snapshot from listener is harder inside function, 
+            // let's just do it manually via a quick trick or fetch current local data
+            // Actually, let's just use the doc references we know exist.
+            // For simplicity in this script, we will query standard snapshot inside the click:
+            // *Re-importing getDocs properly:*
+        };
 
-            const tasks = getTasks(selectedDateKey);
-            tasks.push(task);
-            saveTasksStore(selectedDateKey, tasks);
-
-            renderTaskElement(task);
-            taskInput.value = '';
-            updateProgress();
-        }
-
-        function renderTaskElement(task) {
-            const li = document.createElement('li');
-            li.classList.add('task-item');
-            if (task.completed) li.classList.add('completed');
-            li.dataset.id = task.id;
-
-            const span = document.createElement('span');
-            span.innerText = task.text;
-
-            // Toggle click
-            li.addEventListener('click', (e) => {
-                if (e.target.closest('.delete-task-btn')) return; // Ignore if delete clicked
-
-                toggleTask(task.id);
-                li.classList.toggle('completed');
-
-                if (li.classList.contains('completed')) {
-                    confetti({
-                        particleCount: 40,
-                        spread: 50,
-                        origin: { y: 0.7 },
-                        zIndex: 200 // Above modal
-                    });
-                }
-                updateProgress();
+        // --- KID LOGIC ---
+        function renderKidButtons(kids) {
+            const container = document.getElementById('kid-buttons');
+            container.innerHTML = '';
+            kids.forEach(kid => {
+                const btn = document.createElement('div');
+                btn.className = 'kid-btn';
+                btn.style.borderColor = kid.color;
+                btn.innerHTML = `<div style="font-size:3rem">${kid.avatar}</div><div style="font-weight:bold; margin-top:5px;">${kid.name}</div>`;
+                btn.onclick = () => {
+                    currentKidId = kid.id;
+                    renderChecklist(kid);
+                    show('checklist');
+                };
+                container.appendChild(btn);
             });
+        }
 
-            const delBtn = document.createElement('button');
-            delBtn.innerHTML = '&times;';
-            delBtn.classList.add('delete-task-btn');
-            delBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteTask(task.id);
-                li.remove();
-                updateProgress();
+        function renderChecklist(kid) {
+            document.getElementById('kidTitle').innerText = kid.name;
+            document.getElementById('kidAvatarDisplay').innerText = kid.avatar;
+            document.documentElement.style.setProperty('--primary', kid.color);
+
+            const list = document.getElementById('task-container');
+            list.innerHTML = '';
+
+            const completed = kid.completedTasks || [];
+
+            TASKS.forEach(task => {
+                const isDone = completed.includes(task.id);
+                const row = document.createElement('div');
+                row.className = `task-row ${isDone ? 'done' : ''}`;
+                if (isDone) row.style.borderColor = kid.color;
+
+                row.innerHTML = `
+                <span>${task.txt}</span>
+                <div class="checkbox">
+                    ${isDone ? '<i class="fas fa-check"></i>' : ''}
+                </div>
+            `;
+                row.onclick = () => toggleTask(kid.id, task.id, isDone, kid.color);
+                list.appendChild(row);
             });
-
-            li.appendChild(span);
-            li.appendChild(delBtn);
-            taskList.appendChild(li);
         }
 
-        function toggleTask(id) {
-            const tasks = getTasks(selectedDateKey);
-            const task = tasks.find(t => t.id == id);
-            if (task) {
-                task.completed = !task.completed;
-                saveTasksStore(selectedDateKey, tasks);
-            }
-        }
-
-        function deleteTask(id) {
-            let tasks = getTasks(selectedDateKey);
-            tasks = tasks.filter(t => t.id != id);
-            saveTasksStore(selectedDateKey, tasks);
-        }
-
-        function updateProgress() {
-            const tasks = getTasks(selectedDateKey);
-            if (tasks.length === 0) {
-                progressBar.style.width = '0%';
-                progressText.innerText = '0%';
-                return;
-            }
-
-            const completed = tasks.filter(t => t.completed).length;
-            const percent = Math.round((completed / tasks.length) * 100);
-
-            progressBar.style.width = `${percent}%`;
-            progressText.innerText = `${percent}%`;
-
-            if (percent === 100) {
+        window.toggleTask = async (kidId, taskId, isDone, color) => {
+            const kidRef = doc(db, "kids", kidId);
+            if (isDone) {
+                await updateDoc(kidRef, { completedTasks: arrayRemove(taskId) });
+            } else {
+                await updateDoc(kidRef, { completedTasks: arrayUnion(taskId) });
                 confetti({
-                    particleCount: 150,
-                    spread: 100,
-                    origin: { y: 0.6 },
-                    zIndex: 200
+                    particleCount: 50, spread: 60, origin: { y: 0.7 }, colors: [color, '#ffd700']
                 });
             }
+        };
+
+        // Updated Reset Function using the existing DB connection
+        // We iterate current kids and reset them one by one (Simple method)
+        // In a real production app we'd use a Batch, but this is safer for copy-paste
+        import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        window.resetAllKids = async () => {
+            if (!confirm("Start a new day for everyone?")) return;
+            const q = await getDocs(collection(db, "kids"));
+            q.forEach(async (d) => {
+                await updateDoc(doc(db, "kids", d.id), { completedTasks: [] });
+            });
         }
+
     </script>
+
 </body>
 
 </html>
