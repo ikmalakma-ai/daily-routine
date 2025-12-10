@@ -4,129 +4,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Routine Tracker</title>
+    <title>Zara's Family Routine</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg: #f4f7f6;
-            --card: #ffffff;
-            --primary: #4a90e2;
-            --font: 'Comic Sans MS', 'Baloo 2', sans-serif;
+            --bg-color: #E0F7FA;
+            --primary: #00BCD4;
+            --accent: #FFEB3B;
+            --text: #37474F;
+            --font: 'Fredoka', sans-serif;
         }
 
         body {
             font-family: var(--font);
-            background: var(--bg);
+            background-color: var(--bg-color);
             margin: 0;
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            color: #333;
+            color: var(--text);
+            overflow-x: hidden;
         }
 
-        .app {
+        .app-container {
             width: 100%;
-            max-width: 600px;
-            background: var(--card);
+            max-width: 480px;
+            background: white;
             min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
             position: relative;
             display: flex;
             flex-direction: column;
         }
 
-        /* SCREENS */
+        /* --- SCREENS --- */
         .screen {
             display: none;
-            padding: 20px;
+            padding: 25px;
+            flex-grow: 1;
             flex-direction: column;
-            height: 100%;
         }
 
         .screen.active {
             display: flex;
+            animation: fadeIn 0.4s ease;
         }
 
-        /* HOME SCREEN */
-        .mode-btn {
-            background: white;
-            border: 2px solid #eee;
-            padding: 30px;
-            border-radius: 20px;
-            margin: 10px 0;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- LOGIN SCREEN --- */
+        h1 {
             text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            color: var(--primary);
+            margin-bottom: 30px;
         }
 
-        .mode-btn:hover {
-            background: #f9f9f9;
-            transform: scale(1.02);
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
 
-        .mode-btn.parent {
-            border-color: #4a90e2;
-            color: #4a90e2;
-        }
-
-        .mode-btn.kid {
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        /* ADMIN DASHBOARD */
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 15px;
-        }
-
-        .stat-card {
-            background: #fff;
-            border: 1px solid #ddd;
+        .profile-card {
+            background: white;
+            border: 3px solid #eee;
+            border-radius: 20px;
             padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-        }
-
-        .progress-track {
-            background: #eee;
-            height: 15px;
-            border-radius: 10px;
-            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
             overflow: hidden;
         }
 
-        .progress-fill {
-            height: 100%;
-            transition: width 0.5s ease;
+        .profile-card:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
         }
 
-        /* FORMS */
-        input {
+        .avatar {
+            font-size: 3.5rem;
+            background: #f9f9f9;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 3px solid transparent;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .lock-icon {
+            margin-left: auto;
+            color: #ccc;
+            font-size: 1.2rem;
+        }
+
+        /* --- PASSWORD MODAL --- */
+        #password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 12px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .pass-input {
+            font-size: 1.5rem;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
             border: 2px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            border-radius: 10px;
+            margin: 20px 0;
             box-sizing: border-box;
         }
 
-        .emoji-grid {
+        .pass-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* --- ROUTINE LIST --- */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #eee;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .task-list {
+            margin-top: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border: 2px solid #f0f0f0;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .task-item.completed {
+            background: #E8F5E9;
+            border-color: #66BB6A;
+            opacity: 0.8;
+        }
+
+        .task-item.completed span {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .check-circle {
+            margin-left: auto;
+            width: 28px;
+            height: 28px;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .task-item.completed .check-circle {
+            background: #66BB6A;
+            border-color: #66BB6A;
+        }
+
+        /* --- ADMIN SCREEN --- */
+        .admin-form label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .admin-form input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .emoji-picker {
             display: flex;
             gap: 10px;
             margin: 10px 0;
             overflow-x: auto;
+            padding-bottom: 5px;
         }
 
         .emoji-opt {
@@ -142,156 +263,102 @@
             border-color: #333;
         }
 
-        .btn-main {
-            background: #333;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            width: 100%;
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
-
-        /* KID UI */
-        .kid-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .kid-btn {
-            background: white;
-            border: 2px solid;
-            border-radius: 20px;
-            padding: 20px;
+        .parent-link {
             text-align: center;
+            margin-top: auto;
+            padding: 20px;
+            color: #ccc;
             cursor: pointer;
-        }
-
-        .task-row {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            background: white;
-            border: 2px solid #eee;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .task-row.done {
-            background: #e8f5e9;
-            border-color: #66bb6a;
-            opacity: 0.8;
-        }
-
-        .task-row.done span {
-            text-decoration: line-through;
-            color: #888;
-        }
-
-        .checkbox {
-            width: 25px;
-            height: 25px;
-            border: 2px solid #ccc;
-            border-radius: 50%;
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .task-row.done .checkbox {
-            background: #66bb6a;
-            border-color: #66bb6a;
-            color: white;
-        }
-
-        .back-link {
-            cursor: pointer;
-            color: #888;
-            margin-bottom: 10px;
-            display: inline-block;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="app">
+    <div class="app-container">
 
-        <div id="home" class="screen active">
-            <h1 style="text-align:center;">Family Daily Routine</h1>
-
-            <div class="mode-btn kid" onclick="openKidMode()">
-                <i class="fas fa-child"></i>
-                <div>I am a Kid</div>
+        <div id="login-screen" class="screen active">
+            <h1>Who is checking in?</h1>
+            <div id="profiles-container" class="profile-grid">
+                <p style="text-align:center; color:#999">Loading profiles...</p>
             </div>
-
-            <div class="mode-btn parent" onclick="openAdminMode()">
-                <i class="fas fa-user-shield"></i>
-                <div>I am a Parent (Admin)</div>
-            </div>
+            <div class="parent-link" onclick="showScreen('admin-screen')">⚙️ Parent Settings</div>
         </div>
 
-        <div id="admin" class="screen">
-            <div class="admin-header">
-                <span class="back-link" onclick="goHome()">Back</span>
-                <h2>Admin Dashboard</h2>
-                <button onclick="resetAllKids()"
-                    style="background:#ff7675; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Reset
-                    New Day</button>
-            </div>
-
-            <div id="admin-list">
-                <p>Loading kids...</p>
-            </div>
-
-            <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
-
-            <h3>Add New Kid</h3>
-            <input type="text" id="newName" placeholder="Name (e.g. Leo)">
-            <p style="margin:5px 0; font-weight:bold;">Pick an Avatar:</p>
-            <div class="emoji-grid" id="emojiPicker">
-                <div class="emoji-opt selected">🦁</div>
-                <div class="emoji-opt">🦄</div>
-                <div class="emoji-opt">🦖</div>
-                <div class="emoji-opt">🚀</div>
-                <div class="emoji-opt">🐱</div>
-                <div class="emoji-opt">👸</div>
-                <div class="emoji-opt">🕷️</div>
-            </div>
-            <button class="btn-main" onclick="addKid()">Add Kid</button>
-        </div>
-
-        <div id="kid-select" class="screen">
-            <span class="back-link" onclick="goHome()">Back</span>
-            <h1 style="text-align:center">Who are you?</h1>
-            <div id="kid-buttons" class="kid-grid"></div>
-        </div>
-
-        <div id="checklist" class="screen">
-            <div class="admin-header" style="border-color: transparent;">
-                <button class="back-link" style="background:none; border:none; font-size:1.2rem"
-                    onclick="openKidMode()">Start Over</button>
-                <div style="text-align:right">
-                    <h2 id="kidTitle" style="margin:0">Name</h2>
-                    <small>Today's Tasks</small>
+        <div id="routine-screen" class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="logout()"><i class="fas fa-arrow-left"></i></button>
+                <div id="header-avatar" style="font-size:2.5rem;">🦁</div>
+                <div>
+                    <h2 id="header-name" style="margin:0">Name</h2>
+                    <small>Let's do this!</small>
                 </div>
-                <div id="kidAvatarDisplay" style="font-size: 2.5rem;">🦁</div>
+                <button onclick="resetMyDay()"
+                    style="margin-left:auto; background:#FFEB3B; border:none; padding:8px 12px; border-radius:10px; cursor:pointer;">🔄
+                    Reset</button>
+            </div>
+            <div id="task-list" class="task-list"></div>
+        </div>
+
+        <div id="admin-screen" class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="showScreen('login-screen')"><i class="fas fa-times"></i></button>
+                <h2>Parent Admin</h2>
             </div>
 
-            <div id="task-container"></div>
+            <div class="admin-form">
+                <h3>Add/Edit Kid</h3>
+                <label>Name</label>
+                <input type="text" id="adminName" placeholder="e.g. Zara 1">
+
+                <label>Password (Important!)</label>
+                <input type="text" id="adminPass" placeholder="e.g. zara1">
+
+                <label>Choose Avatar</label>
+                <div class="emoji-picker">
+                    <div class="emoji-opt selected">👧</div>
+                    <div class="emoji-opt">👦</div>
+                    <div class="emoji-opt">🦁</div>
+                    <div class="emoji-opt">🦄</div>
+                    <div class="emoji-opt">🦖</div>
+                    <div class="emoji-opt">🤖</div>
+                    <div class="emoji-opt">🐱</div>
+                </div>
+
+                <label>Color Theme</label>
+                <input type="color" id="adminColor" value="#00BCD4" style="height:40px;">
+
+                <button onclick="createProfile()"
+                    style="width:100%; background:#333; color:white; padding:15px; border:none; border-radius:10px; margin-top:20px; font-size:1rem; cursor:pointer;">Save
+                    Profile</button>
+            </div>
+
+            <hr style="margin:30px 0; border:0; border-top:1px solid #eee;">
+
+            <h3>Existing Profiles</h3>
+            <div id="admin-list"></div>
         </div>
 
     </div>
 
+    <div id="password-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Enter Password</h2>
+            <input type="password" id="password-input" class="pass-input" placeholder="***">
+            <button class="pass-btn" onclick="verifyPassword()">Unlock 🔓</button>
+            <div style="margin-top:15px;">
+                <button onclick="closeModal()"
+                    style="background:none; border:none; color:#888; cursor:pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+        // YOUR CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAzmYoVIcbv08KvCPUHzV1Io9doLS8mmiI",
             authDomain: "triple-zara-s-routine.firebaseapp.com",
@@ -305,74 +372,169 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- DATA ---
-        const TASKS = [
-            { id: 't1', txt: 'Wake Up ☀️' },
-            { id: 't2', txt: 'Brush Teeth 🦷' },
-            { id: 't3', txt: 'Make Bed 🛏️' },
-            { id: 't4', txt: 'Breakfast 🍳' },
-            { id: 't5', txt: 'School Work 📚' },
-            { id: 't6', txt: 'Play Time 🧩' },
-            { id: 't7', txt: 'Sleep 🌙' }
+        // --- APP STATE ---
+        let allKids = [];
+        let selectedKidId = null; // ID of kid trying to login
+        let loggedInKid = null;   // Data of kid currently logged in
+        let selectedEmoji = '👧';
+
+        // --- STANDARD ROUTINE TASKS ---
+        const ROUTINE = [
+            { id: '1', txt: 'Wake Up & Make Bed 🛏️' },
+            { id: '2', txt: 'Brush Teeth 🦷' },
+            { id: '3', txt: 'Shower / Wash Face 🚿' },
+            { id: '4', txt: 'Get Dressed 👕' },
+            { id: '5', txt: 'Eat Breakfast 🍳' },
+            { id: '6', txt: 'Pack Bag 🎒' },
+            { id: '7', txt: 'Homework / Reading 📚' },
+            { id: '8', txt: 'Go to Sleep 🌙' }
         ];
 
-        let currentKidId = null;
-        let selectedEmoji = '🦁';
-
-        // --- NAVIGATION ---
-        window.goHome = () => show('home');
-        window.openAdminMode = () => show('admin');
-        window.openKidMode = () => show('kid-select');
-
-        function show(id) {
+        // --- NAVIGATION HELPERS ---
+        window.showScreen = (id) => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-        }
+        };
 
-        // --- REALTIME LISTENER (The Core Engine) ---
-        // This runs automatically whenever data changes in the database
+        window.logout = () => {
+            selectedKidId = null;
+            loggedInKid = null;
+            document.getElementById('password-input').value = '';
+            window.showScreen('login-screen');
+        };
+
+        // --- 1. LOAD DATA ---
         onSnapshot(collection(db, "kids"), (snapshot) => {
-            const kids = [];
-            snapshot.forEach(doc => kids.push({ ...doc.data(), id: doc.id }));
+            allKids = [];
+            const container = document.getElementById('profiles-container');
+            const adminList = document.getElementById('admin-list');
 
-            renderAdminList(kids);
-            renderKidButtons(kids);
+            container.innerHTML = '';
+            adminList.innerHTML = '';
 
-            // If we are currently inside a kid's checklist, update it live
-            if (currentKidId) {
-                const kidData = kids.find(k => k.id === currentKidId);
-                if (kidData) renderChecklist(kidData);
+            snapshot.forEach(docSnap => {
+                const kid = { id: docSnap.id, ...docSnap.data() };
+                allKids.push(kid);
+
+                // Render Login Card
+                const card = document.createElement('div');
+                card.className = 'profile-card';
+                card.style.borderColor = kid.color;
+                card.innerHTML = `
+                <div class="avatar" style="border-color:${kid.color}">${kid.avatar}</div>
+                <div class="profile-info">
+                    <h2 style="color:${kid.color}">${kid.name}</h2>
+                    <small style="color:#888">Password Protected</small>
+                </div>
+                <i class="fas fa-lock lock-icon"></i>
+            `;
+                card.onclick = () => openPasswordModal(kid.id);
+                container.appendChild(card);
+
+                // Render Admin List Item
+                const adminItem = document.createElement('div');
+                adminItem.innerHTML = `
+                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee; align-items:center;">
+                    <span>${kid.avatar} <b>${kid.name}</b> (Pass: ${kid.password})</span>
+                    <button onclick="deleteKid('${kid.id}')" style="background:#ff7675; color:white; border:none; border-radius:5px; padding:5px 10px; cursor:pointer;">Delete</button>
+                </div>
+            `;
+                adminList.appendChild(adminItem);
+
+                // Live update if currently viewing this kid's routine
+                if (loggedInKid && loggedInKid.id === kid.id) {
+                    loggedInKid = kid; // Update state
+                    renderRoutine();
+                }
+            });
+
+            if (allKids.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:20px;">No profiles yet.<br>Click "Parent Settings" below to add your kids!</div>`;
             }
         });
 
-        // --- ADMIN LOGIC ---
-        function renderAdminList(kids) {
-            const container = document.getElementById('admin-list');
-            container.innerHTML = '';
+        // --- 2. PASSWORD LOGIC ---
+        window.openPasswordModal = (id) => {
+            selectedKidId = id;
+            document.getElementById('password-modal').style.display = 'flex';
+            document.getElementById('password-input').focus();
+        };
 
-            if (kids.length === 0) container.innerHTML = '<p>No kids yet. Add one below!</p>';
+        window.closeModal = () => {
+            document.getElementById('password-modal').style.display = 'none';
+            document.getElementById('password-input').value = '';
+        };
 
-            kids.forEach(kid => {
-                const completed = kid.completedTasks ? kid.completedTasks.length : 0;
-                const percent = Math.round((completed / TASKS.length) * 100);
+        window.verifyPassword = () => {
+            const input = document.getElementById('password-input').value;
+            const kid = allKids.find(k => k.id === selectedKidId);
 
-                const div = document.createElement('div');
-                div.className = 'stat-card';
-                div.innerHTML = `
-                <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                    <span>${kid.avatar} ${kid.name}</span>
-                    <span>${percent}%</span>
+            if (input === kid.password) {
+                // Success
+                loggedInKid = kid;
+                closeModal();
+                loadRoutineScreen();
+            } else {
+                // Fail
+                const inputField = document.getElementById('password-input');
+                inputField.style.borderColor = 'red';
+                inputField.classList.add('shake');
+                setTimeout(() => {
+                    inputField.style.borderColor = '#ddd';
+                    inputField.classList.remove('shake');
+                }, 500);
+            }
+        };
+
+        // --- 3. ROUTINE LOGIC ---
+        function loadRoutineScreen() {
+            document.getElementById('header-name').innerText = loggedInKid.name;
+            document.getElementById('header-avatar').innerText = loggedInKid.avatar;
+            document.getElementById('header-name').style.color = loggedInKid.color;
+            renderRoutine();
+            window.showScreen('routine-screen');
+        }
+
+        function renderRoutine() {
+            const list = document.getElementById('task-list');
+            list.innerHTML = '';
+            const completed = loggedInKid.completedTasks || [];
+
+            ROUTINE.forEach(task => {
+                const isDone = completed.includes(task.id);
+                const item = document.createElement('div');
+                item.className = `task-item ${isDone ? 'completed' : ''}`;
+                if (isDone) item.style.borderColor = loggedInKid.color;
+
+                item.innerHTML = `
+                <div style="font-size:1.1rem; font-weight:600;">${task.txt}</div>
+                <div class="check-circle">
+                    ${isDone ? '<i class="fas fa-check"></i>' : ''}
                 </div>
-                <div class="progress-track">
-                    <div class="progress-fill" style="width:${percent}%; background: ${kid.color || '#4a90e2'}"></div>
-                </div>
-                <small style="color:#888;">${completed} of ${TASKS.length} tasks done</small>
             `;
-                container.appendChild(div);
+                item.onclick = () => toggleTask(task.id, isDone);
+                list.appendChild(item);
             });
         }
 
-        // Emoji Selection Logic
+        window.toggleTask = async (taskId, isDone) => {
+            const ref = doc(db, "kids", loggedInKid.id);
+            if (isDone) {
+                await updateDoc(ref, { completedTasks: arrayRemove(taskId) });
+            } else {
+                await updateDoc(ref, { completedTasks: arrayUnion(taskId) });
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 }, colors: [loggedInKid.color, '#FFD700'] });
+            }
+        };
+
+        window.resetMyDay = async () => {
+            if (confirm("Start a new day?")) {
+                await updateDoc(doc(db, "kids", loggedInKid.id), { completedTasks: [] });
+            }
+        };
+
+        // --- 4. ADMIN LOGIC ---
+        // Emoji Selector
         document.querySelectorAll('.emoji-opt').forEach(e => {
             e.addEventListener('click', () => {
                 document.querySelectorAll('.emoji-opt').forEach(x => x.classList.remove('selected'));
@@ -381,108 +543,69 @@
             });
         });
 
-        window.addKid = async () => {
-            const name = document.getElementById('newName').value;
-            if (!name) return alert("Name needed!");
+        window.createProfile = async () => {
+            const name = document.getElementById('adminName').value;
+            const pass = document.getElementById('adminPass').value;
+            const color = document.getElementById('adminColor').value;
 
-            const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#A29BFE', '#FF9FF3'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            if (!name || !pass) return alert("Name and Password required!");
 
-            await addDoc(collection(db, "kids"), {
-                name: name,
-                avatar: selectedEmoji,
-                color: randomColor,
-                completedTasks: []
-            });
-            document.getElementById('newName').value = '';
-        };
-
-        window.resetAllKids = async () => {
-            if (!confirm("Reset checklist for ALL kids? (New Day)")) return;
-
-            // Batch update to be efficient
-            const batch = writeBatch(db);
-            const snapshot = await getDocs(collection(db, "kids")); // Need to import getDocs if used here, 
-            // simpler way for this single file without extra imports:
-
-            // Loop through snapshot from listener is harder inside function, 
-            // let's just do it manually via a quick trick or fetch current local data
-            // Actually, let's just use the doc references we know exist.
-            // For simplicity in this script, we will query standard snapshot inside the click:
-            // *Re-importing getDocs properly:*
-        };
-
-        // --- KID LOGIC ---
-        function renderKidButtons(kids) {
-            const container = document.getElementById('kid-buttons');
-            container.innerHTML = '';
-            kids.forEach(kid => {
-                const btn = document.createElement('div');
-                btn.className = 'kid-btn';
-                btn.style.borderColor = kid.color;
-                btn.innerHTML = `<div style="font-size:3rem">${kid.avatar}</div><div style="font-weight:bold; margin-top:5px;">${kid.name}</div>`;
-                btn.onclick = () => {
-                    currentKidId = kid.id;
-                    renderChecklist(kid);
-                    show('checklist');
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function renderChecklist(kid) {
-            document.getElementById('kidTitle').innerText = kid.name;
-            document.getElementById('kidAvatarDisplay').innerText = kid.avatar;
-            document.documentElement.style.setProperty('--primary', kid.color);
-
-            const list = document.getElementById('task-container');
-            list.innerHTML = '';
-
-            const completed = kid.completedTasks || [];
-
-            TASKS.forEach(task => {
-                const isDone = completed.includes(task.id);
-                const row = document.createElement('div');
-                row.className = `task-row ${isDone ? 'done' : ''}`;
-                if (isDone) row.style.borderColor = kid.color;
-
-                row.innerHTML = `
-                <span>${task.txt}</span>
-                <div class="checkbox">
-                    ${isDone ? '<i class="fas fa-check"></i>' : ''}
-                </div>
-            `;
-                row.onclick = () => toggleTask(kid.id, task.id, isDone, kid.color);
-                list.appendChild(row);
-            });
-        }
-
-        window.toggleTask = async (kidId, taskId, isDone, color) => {
-            const kidRef = doc(db, "kids", kidId);
-            if (isDone) {
-                await updateDoc(kidRef, { completedTasks: arrayRemove(taskId) });
-            } else {
-                await updateDoc(kidRef, { completedTasks: arrayUnion(taskId) });
-                confetti({
-                    particleCount: 50, spread: 60, origin: { y: 0.7 }, colors: [color, '#ffd700']
+            try {
+                await addDoc(collection(db, "kids"), {
+                    name: name,
+                    password: pass, // Storing simply based on requirements
+                    avatar: selectedEmoji,
+                    color: color,
+                    completedTasks: []
                 });
+                alert("Kid Added!");
+                // Clear Form
+                document.getElementById('adminName').value = '';
+                document.getElementById('adminPass').value = '';
+            } catch (e) {
+                console.error(e);
+                alert("Error adding profile.");
             }
         };
 
-        // Updated Reset Function using the existing DB connection
-        // We iterate current kids and reset them one by one (Simple method)
-        // In a real production app we'd use a Batch, but this is safer for copy-paste
-        import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        window.deleteKid = async (id) => {
+            if (confirm("Are you sure you want to delete this profile?")) {
+                await deleteDoc(doc(db, "kids", id));
+            }
+        };
 
-        window.resetAllKids = async () => {
-            if (!confirm("Start a new day for everyone?")) return;
-            const q = await getDocs(collection(db, "kids"));
-            q.forEach(async (d) => {
-                await updateDoc(doc(db, "kids", d.id), { completedTasks: [] });
-            });
+        // Make functions available globally
+        window.deleteKid = deleteKid;
+    </script>
+
+    <style>
+        /* Shake Animation for Wrong Password */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
         }
 
-    </script>
+        .shake {
+            animation: shake 0.3s;
+        }
+    </style>
 
 </body>
 
