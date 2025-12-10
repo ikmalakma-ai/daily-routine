@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Awesome Year</title>
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Comic+Neue:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Color Palette - Vibrant & Playful but Modern */
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --secondary: #00cec9;
+            --accent: #fdcb6e;
+            --danger: #ff7675;
+            --dark: #2d3436;
+            --light: #dfe6e9;
+            --white: #ffffff;
+
+            --bg-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+
+            --font-heading: 'Outfit', sans-serif;
+            --font-body: 'Comic Neue', cursive;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: var(--font-body);
+            background-image: var(--bg-gradient);
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        /* --- Calendar View --- */
+        #calendarView {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: var(--glass-border);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .month-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .month-controls h2 {
+            font-family: var(--font-heading);
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--dark);
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .nav-btn {
+            background: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .day-cell {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            aspect-ratio: 1;
+            /* Square cells */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-cell:hover {
+            transform: translateY(-5px);
+            background: var(--white);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-cell.today {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.1);
+        }
+
+        .day-cell.other-month {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .day-number {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Indicators for tasks */
+        .day-indicators {
+            margin-top: auto;
+            width: 100%;
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+        }
+
+        .dot.done {
+            background-color: var(--primary);
+        }
+
+        /* --- Modal (Day View) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 90%;
+            max-width: 550px;
+            border-radius: 30px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: scale(1);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.hidden .modal-content {
+            transform: scale(0.8);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--danger);
+            line-height: 1;
+        }
+
+        .day-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .day-header h2 {
+            font-family: var(--font-heading);
+            margin: 0 0 15px 0;
+            color: var(--dark);
+            font-size: 1.8rem;
+        }
+
+        .progress-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar-bg {
+            flex-grow: 1;
+            height: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #progressText {
+            font-weight: bold;
+            color: var(--primary);
+            font-family: var(--font-heading);
+        }
+
+        /* Routine Section */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #taskInput {
+            flex-grow: 1;
+            padding: 15px;
+            border: 2px solid var(--light);
+            border-radius: 15px;
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #taskInput:focus {
+            border-color: var(--secondary);
+        }
+
+        #addTaskBtn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            width: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        #addTaskBtn:click {
+            transform: scale(0.95);
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .task-item:hover {
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transform: translateX(5px);
+        }
+
+        .task-item.completed {
+            background: #e6fffa;
+            border-color: var(--secondary);
+            color: #b2bec3;
+            text-decoration: line-through;
+        }
+
+        .task-item.completed span::before {
+            content: "✅ ";
+            margin-right: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .delete-task-btn {
+            background: #ffeaa7;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: #d63031;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-weight: bold;
+        }
+
+        .task-item:hover .delete-task-btn {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .calendar-grid {
+                gap: 8px;
+            }
+
+            .weekday {
+                font-size: 0.7rem;
+            }
+
+            .day-number {
+                font-size: 1rem;
+            }
+
+            .app-container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Calendar View -->
+        <div id="calendarView" class="view active">
+            <header class="main-header">
+                <div class="logo">📅 My Year</div>
+                <div class="month-controls">
+                    <button id="prevMonth" class="nav-btn">&lt;</button>
+                    <h2 id="currentMonthYear">September 2023</h2>
+                    <button id="nextMonth" class="nav-btn">&gt;</button>
+                </div>
+            </header>
+
+            <div class="calendar-grid">
+                <div class="weekday">Sun</div>
+                <div class="weekday">Mon</div>
+                <div class="weekday">Tue</div>
+                <div class="weekday">Wed</div>
+                <div class="weekday">Thu</div>
+                <div class="weekday">Fri</div>
+                <div class="weekday">Sat</div>
+                <!-- Days will be injected here by JS -->
+            </div>
+        </div>
+
+        <!-- Day/Routine View (Modal Overlay) -->
+        <div id="dayView" class="modal-overlay hidden">
+            <div class="modal-content">
+                <button class="close-btn" id="closeDayBtn">&times;</button>
+
+                <header class="day-header">
+                    <h2 id="selectedDateDisplay">Monday, 12th</h2>
+                    <div class="progress-wrapper">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progressBar"></div>
+                        </div>
+                        <span id="progressText">0%</span>
+                    </div>
+                </header>
+
+                <div class="routine-section">
+                    <div class="input-group">
+                        <input type="text" id="taskInput" placeholder="Add a new mission...">
+                        <button id="addTaskBtn">+</button>
+                    </div>
+
+                    <ul id="taskList" class="task-list">
+                        <!-- Tasks go here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Calendar & Routine App Logic
+
+        // DOM Elements
+        const calendarGrid = document.querySelector('.calendar-grid');
+        const currentMonthYear = document.getElementById('currentMonthYear');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+
+        const modal = document.getElementById('dayView');
+        const closeDayBtn = document.getElementById('closeDayBtn');
+        const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+        const taskInput = document.getElementById('taskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskList = document.getElementById('taskList');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        // State
+        let currentDate = new Date();
+        let selectedDateKey = null; // Format: YYYY-MM-DD
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCalendar();
+
+            // Event Listeners
+            prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+            nextMonthBtn.addEventListener('click', () => changeMonth(1));
+
+            closeDayBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            addTaskBtn.addEventListener('click', addTask);
+            taskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask();
+            });
+        });
+
+        // --- Calendar Logic ---
+
+        function renderCalendar() {
+            // Clear existing days (keep headers)
+            const existingDays = document.querySelectorAll('.day-cell');
+            existingDays.forEach(day => day.remove());
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // Update Header
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            currentMonthYear.innerText = `${monthNames[month]} ${year}`;
+
+            // Calculate days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            // Render Previous Month Padding
+            for (let i = 0; i < firstDay; i++) {
+                const dayNum = daysInPrevMonth - firstDay + 1 + i;
+                const div = createDayElement(dayNum, true);
+                calendarGrid.appendChild(div);
+            }
+
+            // Render Current Month Days
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const div = createDayElement(i, false);
+
+                // Check if Today
+                if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    div.classList.add('today');
+                }
+
+                // Add Click Event
+                div.addEventListener('click', () => openDay(i));
+
+                // Add Indicators
+                const dateKey = formatDateKey(year, month, i);
+                const tasks = getTasks(dateKey);
+                if (tasks.length > 0) {
+                    const indicators = document.createElement('div');
+                    indicators.classList.add('day-indicators');
+                    // Show up to 3 dots
+                    tasks.slice(0, 3).forEach(task => {
+                        const dot = document.createElement('div');
+                        dot.classList.add('dot');
+                        if (task.completed) dot.classList.add('done');
+                        indicators.appendChild(dot);
+                    });
+                    div.appendChild(indicators);
+                }
+
+                calendarGrid.appendChild(div);
+            }
+
+            // Render Next Month Padding (to fill 6 rows grid if needed, mostly just to fill current row)
+            const totalCells = firstDay + daysInMonth;
+            const remainingCells = (7 - (totalCells % 7)) % 7;
+            for (let i = 1; i <= remainingCells; i++) {
+                const div = createDayElement(i, true);
+                calendarGrid.appendChild(div);
+            }
+        }
+
+        function createDayElement(dayNum, isOtherMonth) {
+            const div = document.createElement('div');
+            div.classList.add('day-cell');
+            if (isOtherMonth) div.classList.add('other-month');
+
+            const span = document.createElement('span');
+            span.classList.add('day-number');
+            span.innerText = dayNum;
+
+            div.appendChild(span);
+            return div;
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // --- Day View (Modal) Logic ---
+
+        function formatDateKey(year, month, day) {
+            // Zero-pad month and day
+            const m = (month + 1).toString().padStart(2, '0');
+            const d = day.toString().padStart(2, '0');
+            return `${year}-${m}-${d}`;
+        }
+
+        function openDay(day) {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            selectedDateKey = formatDateKey(year, month, day);
+
+            // Set Header Date
+            const dateObj = new Date(year, month, day);
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            selectedDateDisplay.innerText = dateObj.toLocaleDateString('en-US', options);
+
+            // Load Tasks
+            loadTasksUI();
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            // Refresh calendar to update indicators
+            renderCalendar();
+        }
+
+        // --- Task Management ---
+
+        function getTasks(dateKey) {
+            return JSON.parse(localStorage.getItem(`routine_${dateKey}`)) || [];
+        }
+
+        function saveTasksStore(dateKey, tasks) {
+            localStorage.setItem(`routine_${dateKey}`, JSON.stringify(tasks));
+        }
+
+        function loadTasksUI() {
+            taskList.innerHTML = '';
+            const tasks = getTasks(selectedDateKey);
+
+            // If empty, maybe copy from previous day? Or just default items?
+            // Let's stick to empty or default suggested items if it's the very first time ever?
+            // For now, clean slate is fine, OR we can pull "Daily Routine" defaults if empty.
+
+            if (tasks.length === 0) {
+                // Optional: Pre-fill?
+            }
+
+            tasks.forEach(task => {
+                renderTaskElement(task);
+            });
+
+            updateProgress();
+        }
+
+        function addTask() {
+            const text = taskInput.value.trim();
+            if (!text) return;
+
+            const task = {
+                id: Date.now(),
+                text: text,
+                completed: false
+            };
+
+            const tasks = getTasks(selectedDateKey);
+            tasks.push(task);
+            saveTasksStore(selectedDateKey, tasks);
+
+            renderTaskElement(task);
+            taskInput.value = '';
+            updateProgress();
+        }
+
+        function renderTaskElement(task) {
+            const li = document.createElement('li');
+            li.classList.add('task-item');
+            if (task.completed) li.classList.add('completed');
+            li.dataset.id = task.id;
+
+            const span = document.createElement('span');
+            span.innerText = task.text;
+
+            // Toggle click
+            li.addEventListener('click', (e) => {
+                if (e.target.closest('.delete-task-btn')) return; // Ignore if delete clicked
+
+                toggleTask(task.id);
+                li.classList.toggle('completed');
+
+                if (li.classList.contains('completed')) {
+                    confetti({
+                        particleCount: 40,
+                        spread: 50,
+                        origin: { y: 0.7 },
+                        zIndex: 200 // Above modal
+                    });
+                }
+                updateProgress();
+            });
+
+            const delBtn = document.createElement('button');
+            delBtn.innerHTML = '&times;';
+            delBtn.classList.add('delete-task-btn');
+            delBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteTask(task.id);
+                li.remove();
+                updateProgress();
+            });
+
+            li.appendChild(span);
+            li.appendChild(delBtn);
+            taskList.appendChild(li);
+        }
+
+        function toggleTask(id) {
+            const tasks = getTasks(selectedDateKey);
+            const task = tasks.find(t => t.id == id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasksStore(selectedDateKey, tasks);
+            }
+        }
+
+        function deleteTask(id) {
+            let tasks = getTasks(selectedDateKey);
+            tasks = tasks.filter(t => t.id != id);
+            saveTasksStore(selectedDateKey, tasks);
+        }
+
+        function updateProgress() {
+            const tasks = getTasks(selectedDateKey);
+            if (tasks.length === 0) {
+                progressBar.style.width = '0%';
+                progressText.innerText = '0%';
+                return;
+            }
+
+            const completed = tasks.filter(t => t.completed).length;
+            const percent = Math.round((completed / tasks.length) * 100);
+
+            progressBar.style.width = `${percent}%`;
+            progressText.innerText = `${percent}%`;
+
+            if (percent === 100) {
+                confetti({
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.6 },
+                    zIndex: 200
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
